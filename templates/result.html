@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PCA Result - Sports Performance</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <body>
+    <main class="container">
+      <header class="header">
+        <h1>PCA Result</h1>
+        <div class="meta">File: {{ original_filename }} • Components: {{ n_components }}</div>
+      </header>
+
+      <section class="result-grid">
+        <div class="card chart-card">
+          <canvas id="pcaChart" height="420"></canvas>
+          <div class="explained card-inner">
+            <h4>Explained variance ratio</h4>
+            <div class="vars">
+              {% for v in explained_variance %}
+                <div class="var-item">PC{{ loop.index }}: {{ v }}</div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+
+        <aside class="card summary">
+          <h3>Used Features</h3>
+          <ul>
+            {% for c in columns %}
+              <li>{{ c }}</li>
+            {% endfor %}
+          </ul>
+
+          <h3>Preview</h3>
+          <div class="preview-table">{{ preview_html | safe }}</div>
+
+          <div class="actions">
+            <a href="{{ url_for('index') }}" class="btn small">New Analysis</a>
+            <a href="{{ url_for('download', result_id=result_id) }}" class="btn small hollow">Download PCA Scores</a>
+          </div>
+        </aside>
+      </section>
+
+      <footer class="footer">
+        <small>Tip: Try different feature sets to see how components change meaningfully.</small>
+      </footer>
+    </main>
+
+    <script>
+      const plotData = {{ plot_json | safe }};
+      const points = plotData.points;
+
+      // build dataset for Chart.js
+      const scatterData = points.map(p => ({ x: p.PC1, y: p.PC2, label: p.id }));
+
+      const ctx = document.getElementById('pcaChart').getContext('2d');
+      const scatter = new Chart(ctx, {
+        type: 'scatter',
+        data: {
+          datasets: [{
+            label: 'Players',
+            data: scatterData,
+            pointRadius: 6,
+            pointHoverRadius: 9,
+          }]
+        },
+        options: {
+          plugins: {
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  const p = context.raw;
+                  return `${p.label}: (${p.x.toFixed(3)}, ${p.y.toFixed(3)})`;
+                }
+              }
+            },
+            legend: { display: false }
+          },
+          scales: {
+            x: { title: { display: true, text: 'PC1' } },
+            y: { title: { display: true, text: 'PC2' } }
+          }
+        }
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,67 @@
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sports PCA - Upload Data</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  </head>
+  <body>
+    <main class="container">
+      <section class="hero">
+        <div class="left">
+          <h1>Sports Performance Analysis</h1>
+          <p class="lead">Upload player statistics and use Principal Component Analysis (PCA) to visualize high-dimensional performance data in 2D.</p>
+
+          <form method="POST" enctype="multipart/form-data" class="upload-form">
+            <label class="file-drop" id="file-drop">
+              <input type="file" name="file" accept=".csv" required>
+              <div>
+                <strong>Choose CSV</strong>
+                <div class="muted">Suggested columns: PlayerID, Name, Team, Position, Goals, Assists, PassAccuracy, ShotsOnTarget, DribblesPerGame, MinutesPlayed</div>
+              </div>
+            </label>
+
+            <div class="params">
+              <label>Number of components
+                <input type="number" name="n_components" step="1" value="2" min="2" max="6">
+              </label>
+              <label>Label column (optional)
+                <input type="text" name="label_col" placeholder="e.g. Position or Team">
+              </label>
+            </div>
+
+            <div style="display:flex;gap:10px;align-items:center;margin-top:8px">
+              <button class="btn">Upload & Analyze</button>
+              <a class="btn ghost" href="/sample">Download Sample CSV</a>
+            </div>
+          </form>
+
+          <div class="note">Tip: Use "Position" or "Team" as the label column to color points by role or team.</div>
+        </div>
+
+        <div class="right">
+          <div class="card preview">
+            <h3>Sample (first rows)</h3>
+            <pre>PlayerID,Name,Team,Position,Goals,Assists,PassAccuracy,ShotsOnTarget,DribblesPerGame,MinutesPlayed
+P001,Alex Smith,Blue FC,Forward,18,7,82.5,45,2.8,2400
+P002,Ben Brown,Red United,Midfielder,6,12,89.2,18,3.1,2500
+P003,Chris Doe,Blue FC,Defender,2,1,86.0,3,0.4,2700</pre>
+          </div>
+        </div>
+      </section>
+
+      <footer>
+        <small>Built with Flask • PCA • Chart.js</small>
+      </footer>
+    </main>
+
+    <script>
+      const fileDrop = document.getElementById('file-drop');
+      fileDrop.addEventListener('dragover', (e) => { e.preventDefault(); fileDrop.classList.add('hover'); });
+      fileDrop.addEventListener('dragleave', () => fileDrop.classList.remove('hover'));
+    </script>
+  </body>
+</html>
